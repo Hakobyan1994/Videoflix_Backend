@@ -1,0 +1,12 @@
+# Standard: Textdateien automatisch normalisieren
+* text=auto
+
+# Erzwinge LF für deine Docker-Dateien
+backend.entrypoint.sh text eol=lf
+backend.Dockerfile     text eol=lf
+docker-compose.yml     text eol=lf
+
+# (Optional – falls du noch mehr solcher Dateien hast)
+*.sh   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf

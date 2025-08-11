@@ -1,0 +1,80 @@
+# =========================
+# Python / Django
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.log
+*.pot
+*.mo
+*.db
+*.sqlite3
+db.sqlite3
+instance/
+
+# Ignore compiled/migrated files in Django apps
+*/migrations/*.py
+!*/migrations/__init__.py
+*/migrations/__pycache__/
+
+# =========================
+# Environment / Config
+# =========================
+.env
+*.env
+.env.*
+
+# =========================
+# Django Media & Static
+# =========================
+media/
+staticfiles/
+static/
+
+# =========================
+# Virtualenv / venv
+# =========================
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# Node.js / Frontend
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+.pnp.js
+
+# =========================
+# macOS / Windows
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Testing
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Docker
+# =========================
+*.pid
+docker-compose.override.yml
