@@ -25,6 +25,8 @@ instance/
 .env
 *.env
 .env.*
+!.env.template   # <- Ausnahme: Template soll ins Repo
+
 
 # =========================
 # Django Media & Static
