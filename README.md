@@ -298,9 +298,10 @@ DEFAULT_FROM_EMAIL=default_from_email
 ## 📌 9. Useful Docker Commands
 
 ```bash
-docker compose up -d
-docker compose down
-docker compose build web
-docker compose exec web bash
+docker-compose up --build  # Build your containers
+docker compose up -d # Run server
+docker compose down # Stop server
+docker compose build web # Rebuild the Docker image for the web service
+docker compose exec web bash # Open an interactive bash shell inside the 'web' Docker container
 docker compose down -v # DANGER: deletes DB/media/static volumes
 ```
