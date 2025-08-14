@@ -3,19 +3,28 @@ from.serializers import VideoSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, permissions
 from pathlib import Path
 from django.http import FileResponse, Http404
 from django.conf import settings
 
 
 class VideoList(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def get(self,request,):
+        category = request.query_params.get('category') 
         videos = Video.objects.all()
+        if category:
+            category = category.strip()            
+            videos = videos.filter(category__iexact=category)
+            # videos = videos.filter(category=category)
         serializer = VideoSerializer(videos, many=True,context={'request': request})
         return Response(serializer.data,status=status.HTTP_200_OK) 
     
+
+    
 class VideoDetail(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def get_object(self, pk):
         try:
             return Video.objects.get(pk=pk)

@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'django_rq',
-    'user_auth',
+    'user_auth.apps.UserAuthConfig',
     'rest_framework_simplejwt',
     'videos.apps.VideosConfig',
 ]

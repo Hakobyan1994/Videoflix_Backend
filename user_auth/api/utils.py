@@ -4,25 +4,95 @@ from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.contrib.staticfiles import finders 
+from django.core.mail import EmailMultiAlternatives 
+from email.mime.image import MIMEImage
+import os
+
+
+def get_display_username(user):
+    username = getattr(user, "first_name", "").strip()
+
+    if not username:
+        email_or_username = getattr(user, "username", "User")
+        local_part = email_or_username.split("@")[0]
+        for sep in [".", "_", "-", "+"]:
+            if sep in local_part:
+                local_part = local_part.split(sep)[0]
+                break
+        username = local_part
+    return username.capitalize()
+   
 
 def send_activation_email(request, user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    frontend_base_url = 'http://127.0.0.1:5500/pages/auth/activate.html'
-    reset_link = f"{frontend_base_url}?uid={uid}&token={token}"
-    subject = "Bitte aktiviere dein Konto"
-    message = f"Klicke auf den folgenden Link, um dein Konto zu aktivieren:\n\n{reset_link}"
-    from_email = settings.DEFAULT_FROM_EMAIL
-    recipient_list = [user.email]
-    send_mail(subject, message, from_email, recipient_list)
+    reset_link = f"http://127.0.0.1:5500/pages/auth/activate.html?uid={uid}&token={token}"
+    context = {
+        "username": get_display_username(user),
+        "project_name": "Videoflix",
+        "reset_link": reset_link,
+    }
+
+    html_content = render_to_string("emails/activation_email.html", context)
+
+
+    email = EmailMultiAlternatives(
+        subject="Confirm your email",
+        body="",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[user.email],
+    )
+    email.attach_alternative(html_content, "text/html")
+
+    logo_path = os.path.join(
+        settings.BASE_DIR, "user_auth", "templates", "emails", "videoflix.png"
+    )
+
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            img = MIMEImage(f.read())
+        img.add_header("Content-ID", "<logo>")
+        img.add_header("Content-Disposition", "inline", filename="videoflix.png")
+        email.mixed_subtype = "related"
+        email.attach(img)
+
+    email.send()
+
+
+
 
 def send_password_reset_email(request, user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     frontend_base_url = 'http://127.0.0.1:5500/pages/auth/confirm_password.html'
     reset_link = f"{frontend_base_url}?uid={uid}&token={token}"
-    from_email = settings.DEFAULT_FROM_EMAIL
-    recipient_list = [user.email]
-    subject = 'Passwort zurücksetzen'
-    message = f'Klicke hier, um dein Passwort zurückzusetzen:\n\n{reset_link}'
-    send_mail(subject, message, from_email, recipient_list)  
+    context = {
+        "username": get_display_username(user),
+        "project_name": "Videoflix",
+        "reset_link": reset_link,
+    }
+    html_content = render_to_string("emails/reset_password.html", context)
+    email = EmailMultiAlternatives(
+        subject="Reset your password",
+        body="",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[user.email],
+    )
+    email.attach_alternative(html_content, "text/html")
+
+    logo_path = os.path.join(
+        settings.BASE_DIR, "user_auth", "templates", "emails", "videoflix.png"
+    )
+
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            img = MIMEImage(f.read())
+        img.add_header("Content-ID", "<logo>")
+        img.add_header("Content-Disposition", "inline", filename="videoflix.png")
+        email.mixed_subtype = "related"
+        email.attach(img)
+
+    email.send()
