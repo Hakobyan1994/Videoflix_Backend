@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import Video
-# Register your models here.
 from django.utils.html import format_html
+from django.conf import settings
+from .models import Video
+import os
 
 class VideoAdmin(admin.ModelAdmin):
     list_display = (
@@ -14,12 +15,14 @@ class VideoAdmin(admin.ModelAdmin):
     date_hierarchy = "uploaded_at"
     list_per_page = 50
     readonly_fields = ("uploaded_at", "updated_at", "thumbnail_preview")
+
     fieldsets = (
         ("Basis", {
             "fields": ("title", "description", "category")
         }),
         ("Dateien", {
-            "fields": ("file", "thumbnail_url", "thumbnail_preview"),
+            # 👇 thumbnail_url entfernt, Preview bleibt als read-only Anzeige
+            "fields": ("file", "thumbnail_preview"),
         }),
         ("Meta", {
             "fields": ("uploaded_at", "updated_at"),
@@ -27,14 +30,16 @@ class VideoAdmin(admin.ModelAdmin):
     )
 
     def thumbnail_preview(self, obj):
-        if obj.thumbnail_url:
-            try:
-                return format_html(
-                    '<img src="{}" style="height:60px;border-radius:6px;object-fit:cover;" />',
-                    obj.thumbnail_url.url
-                )
-            except Exception:
-                return "—"
+        # Zeige /media/thumbnails/<id>.jpg, wenn vorhanden
+        if not obj.pk:
+            return "—"
+        rel = f"thumbnails/{obj.id}.jpg"
+        abs_path = os.path.join(settings.MEDIA_ROOT, rel)
+        if os.path.isfile(abs_path):
+            return format_html(
+                '<img src="{}{}" style="height:60px;border-radius:6px;object-fit:cover;" />',
+                settings.MEDIA_URL, rel
+            )
         return "—"
     thumbnail_preview.short_description = "Thumbnail"
 
@@ -43,5 +48,5 @@ class VideoAdmin(admin.ModelAdmin):
     has_file.boolean = True
     has_file.short_description = "Original vorhanden"
 
-admin.site.register(Video,VideoAdmin)        
+admin.site.register(Video, VideoAdmin)     
   

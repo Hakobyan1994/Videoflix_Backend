@@ -17,10 +17,9 @@ class VideoList(APIView):
         if category:
             category = category.strip()            
             videos = videos.filter(category__iexact=category)
-            # videos = videos.filter(category=category)
         serializer = VideoSerializer(videos, many=True,context={'request': request})
         return Response(serializer.data,status=status.HTTP_200_OK) 
-    
+        
 
     
 class VideoDetail(APIView):
