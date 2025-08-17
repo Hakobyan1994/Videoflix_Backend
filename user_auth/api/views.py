@@ -3,7 +3,7 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny,IsAuthenticated
+from rest_framework.permissions import AllowAny
 from .serializers import RegisterSerializer
 from .utils import send_activation_email,send_password_reset_email
 from django.utils.http import urlsafe_base64_decode
@@ -14,6 +14,7 @@ from rest_framework_simplejwt.views  import   TokenObtainPairView, TokenRefreshV
 
 
 class RegisterView(APIView):
+    authentication_classes = []  
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -32,6 +33,7 @@ class RegisterView(APIView):
 
 User = get_user_model()
 class ActivateAccountView(APIView):
+    authentication_classes = [] 
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
@@ -105,6 +107,7 @@ class  CookieTokenRefreshView(TokenRefreshView):
 
 
 class PasswordResetView(APIView):
+    authentication_classes = [] 
     permission_classes=[AllowAny]
 
     def post(self, request):
@@ -117,6 +120,7 @@ class PasswordResetView(APIView):
     
 
 class PasswordResetConfirmView(APIView):
+    authentication_classes = [] 
     permission_classes = [AllowAny]
     
     def post(self, request, uidb64, token):
