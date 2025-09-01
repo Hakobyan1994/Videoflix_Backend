@@ -16,7 +16,6 @@ def video_post_save(sender, instance, created, **kwargs):
         q.enqueue(convert_video, instance.file.path, instance.id, 1080, "1080p")
         q.enqueue(generate_thumbnail, instance.file.path, instance.id)
 
-
 def generate_thumbnail(source, video_id):
     """Nimmt Frame bei 1 Sekunde und speichert als JPG."""
     thumbnails_dir = os.path.join(settings.MEDIA_ROOT, "thumbnails")
