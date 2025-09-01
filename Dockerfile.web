@@ -12,8 +12,9 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
+RUN python manage.py makemigrations --noinput
 RUN python manage.py collectstatic --noinput
 
 EXPOSE $PORT
 
-CMD ["sh", "-c", "python manage.py makemigrations --noinput && python manage.py migrate --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
