@@ -29,7 +29,7 @@ def get_display_username(user):
 def send_activation_email(request, user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    reset_link = f"http://127.0.0.1:5500/pages/auth/activate.html?uid={uid}&token={token}"
+    reset_link = f"https://vidoflix-app.com/pages/auth/activate.html?uid={uid}&token={token}"
     context = {
         "username": get_display_username(user),
         "project_name": "Videoflix",
@@ -67,7 +67,7 @@ def send_activation_email(request, user):
 def send_password_reset_email(request, user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    frontend_base_url = 'http://127.0.0.1:5500/pages/auth/confirm_password.html'
+    frontend_base_url = 'https://vidoflix-app.com/pages/auth/confirm_password.html'
     reset_link = f"{frontend_base_url}?uid={uid}&token={token}"
     context = {
         "username": get_display_username(user),
