@@ -121,23 +121,28 @@ else:
         }
     }
 
+
+
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.getenv("REDIS_URL"),  # ← Nur diese Zeile reicht!
+        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/1"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "SSL": (ENV == "production"),  # SSL automatisch auf Heroku aktiviert
+            "CONNECTION_POOL_KWARGS": {
+                "ssl_cert_reqs": None if ENV == "production" else False
+            },
         },
         "KEY_PREFIX": "videoflix"
     }
 }
 
-# Redis Queue (RQ) Konfiguration
 RQ_QUEUES = {
     'default': {
-        'URL': os.getenv("REDIS_URL"),  # ← Hier nur URL nutzen, keine HOST/PORT/DB separat!
+        'URL': os.getenv("REDIS_URL", "redis://redis:6379/1"),
         'DEFAULT_TIMEOUT': 900,
+        'SSL_CERT_REQS': None if ENV == "production" else False,
     },
 }
 
