@@ -15,7 +15,7 @@ from pathlib import Path
 
 import os
 from dotenv import load_dotenv
-
+import dj_database_url
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -94,37 +94,57 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", default="videoflix_db"),
-        "USER": os.environ.get("DB_USER", default="videoflix_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", default="supersecretpassword"),
-        "HOST": os.environ.get("DB_HOST", default="db"),
-        "PORT": os.environ.get("DB_PORT", default=5432)
+
+ENV = os.getenv("ENV", "development")
+
+if ENV != "production":
+    load_dotenv(BASE_DIR / ".env")
+
+
+if ENV == "production":
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.getenv("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT"),
+        }
+    }
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get("REDIS_LOCATION", default="redis://redis:6379/1"),
+        "LOCATION": os.getenv("REDIS_URL"),  # ← Nur diese Zeile reicht!
         "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SSL": (ENV == "production"),  # SSL automatisch auf Heroku aktiviert
         },
         "KEY_PREFIX": "videoflix"
     }
 }
 
+# Redis Queue (RQ) Konfiguration
 RQ_QUEUES = {
     'default': {
-        'HOST': os.environ.get("REDIS_HOST", default="redis"),
-        'PORT': os.environ.get("REDIS_PORT", default=6379),
-        'DB': os.environ.get("REDIS_DB", default=0),
+        'URL': os.getenv("REDIS_URL"),  # ← Hier nur URL nutzen, keine HOST/PORT/DB separat!
         'DEFAULT_TIMEOUT': 900,
-        'REDIS_CLIENT_KWARGS': {},
     },
 }
+
+
+
+
+
 
 AUTH_USER_MODEL = 'user_auth.User'
 
