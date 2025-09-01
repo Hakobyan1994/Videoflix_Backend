@@ -65,9 +65,14 @@ MIDDLEWARE = [
 
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5500',
-    'http://127.0.0.1:5500',
+    "https://vidoflix-app.com",        # dein Frontend live
+    "https://www.vidoflix-app.com",    # falls mit www
+    "http://127.0.0.1:5500",           # lokal mit Live Server
+    "http://localhost:5500",           # alternativ localhost
+    "http://127.0.0.1:8000",           # falls du lokal Backend direkt testest
+    "http://localhost:8000",           # dito
 ]
+
 CORS_ALLOW_CREDENTIALS = True 
 
 
