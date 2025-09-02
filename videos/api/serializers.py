@@ -17,8 +17,8 @@ class VideoSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "uploaded_at", "updated_at", "thumbnail_url")
 
     def get_thumbnail_url(self, obj):
-        key = f"thumbnails/{obj.id}.jpg"
-        try:
-            return self.context["request"].build_absolute_uri(default_storage.url(key))
-        except Exception:
-            return None
+      key = f"thumbnails/{obj.id}.jpg"
+      try:
+        return default_storage.url(key)
+      except Exception:
+        return None
