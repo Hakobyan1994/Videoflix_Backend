@@ -133,26 +133,30 @@ else:
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/1"),
+        "LOCATION": os.getenv("REDIS_URL", "redis://localhost:6379/1"),
         "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {
-                "ssl_cert_reqs": None if ENV == "production" else False,
+            # WICHTIG: für TLS bei Heroku Redis die ssl-Optionen HIER setzen
+            # (nicht nur im Connection-Pool)
+            "REDIS_CLIENT_KWARGS": {  # <- aktueller Weg in django-redis
+                "ssl": True,                      # bei rediss:// optional, schadet nicht
+                "ssl_cert_reqs": None,            # Zertifikat-Nachweis nicht erzwingen
             },
+            # Optional: Pool-Konfig beibehalten, aber sie ist nicht für SSL nötig
+            # "CONNECTION_POOL_KWARGS": {},
         },
-        "KEY_PREFIX": "videoflix"
+        "KEY_PREFIX": "videoflix",
     }
 }
 
+# ===== RQ Queues (django_rq) =====
 RQ_QUEUES = {
-    'default': {
-        'URL': os.getenv("REDIS_URL", "redis://redis:6379/1"),
-        'DEFAULT_TIMEOUT': 900,
-        'SSL': ENV == "production",  # SSL nur im production
-        'CONNECTION_KWARGS': {
-            'ssl_cert_reqs': None if ENV == "production" else False,
-        },
-    },
+    "default": {
+        "URL": os.getenv("REDIS_URL"),     # Heroku setzt rediss://...
+        "DEFAULT_TIMEOUT": 900,
+        # WICHTIG: django_rq erwartet diese Schlüssel (nicht CONNECTION_KWARGS)
+        "SSL": True,                       # TLS aktiv
+        "SSL_CERT_REQS": None,             # Zertifikatsprüfung aus (selbstsignierte Kette)
+    }
 }
 
 
