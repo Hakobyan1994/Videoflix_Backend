@@ -137,7 +137,7 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "CONNECTION_POOL_KWARGS": {
-                "ssl_cert_reqs": None if ENV == "production" else False
+                "ssl_cert_reqs": None if ENV == "production" else False,
             },
         },
         "KEY_PREFIX": "videoflix"
@@ -148,7 +148,10 @@ RQ_QUEUES = {
     'default': {
         'URL': os.getenv("REDIS_URL", "redis://redis:6379/1"),
         'DEFAULT_TIMEOUT': 900,
-        'SSL_CERT_REQS': None if ENV == "production" else False,
+        'SSL': ENV == "production",  # SSL nur im production
+        'CONNECTION_KWARGS': {
+            'ssl_cert_reqs': None if ENV == "production" else False,
+        },
     },
 }
 
