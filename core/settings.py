@@ -252,7 +252,7 @@ AWS_SECRET_ACCESS_KEY   = os.environ.get("BUCKETEER_AWS_SECRET_ACCESS_KEY")
 # Optional, aber oft sinnvoll mit Bucketeer:
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 AWS_S3_ADDRESSING_STYLE  = "virtual"   # üblich bei Bucketeer
-AWS_QUERYSTRING_AUTH     = False       # nur wenn Objekte öffentlich sein dürfen
+AWS_QUERYSTRING_AUTH     = True   # nur wenn Objekte öffentlich sein dürfen
 
 STORAGES = {
     "default": {
