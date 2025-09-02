@@ -1,6 +1,22 @@
 import subprocess
 import os
 from django.conf import settings
+import cloudinary.uploader
+
+
+def upload_folder_to_cloudinary(local_folder, cloudinary_folder):
+    for root, dirs, files in os.walk(local_folder):
+        for file in files:
+            file_path = os.path.join(root, file)
+            relative_path = os.path.relpath(file_path, local_folder)
+            public_id = f"{cloudinary_folder}/{relative_path}"
+
+            cloudinary.uploader.upload(
+                file_path,
+                public_id=public_id,
+                resource_type="auto",
+                overwrite=True
+            )
 
 def convert_video(source, video_id, resolution, suffix):
     """Convert video to HLS format with m3u8 playlist"""
@@ -39,6 +55,11 @@ def convert_video(source, video_id, resolution, suffix):
 
     if result.returncode != 0:
         print("FFmpeg error:", result.stderr)
+        return
+
+    # Hochladen aller generierten Dateien zu Cloudinary
+    cloudinary_folder = f"videos/{video_id}/{suffix}"
+    upload_folder_to_cloudinary(output_dir, cloudinary_folder)
 
 
     
