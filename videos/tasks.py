@@ -69,5 +69,5 @@ def convert_video(source: str, video_id: int, resolution: int, suffix: str) -> N
     cloudinary_folder = f"videos/{video_id}/{suffix}"
     upload_folder_to_cloudinary(output_dir, cloudinary_folder)
 
-
+    
     
