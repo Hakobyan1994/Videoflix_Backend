@@ -256,7 +256,7 @@ AWS_QUERYSTRING_AUTH     = False       # nur wenn Objekte öffentlich sein dürf
 
 STORAGES = {
     "default": {
-        "BACKEND": "core.storage_backends.PublicMediaStorage",
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
     },
     "staticfiles": {
         # falls du WhiteNoise nutzt – sonst auf deine Lösung anpassen
