@@ -6,16 +6,6 @@ import os
 import django_rq
 from django.conf import settings
 import subprocess
-import cloudinary.uploader, cloudinary, os
-
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-    secure=True
-)
-
-
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
@@ -27,20 +17,21 @@ def video_post_save(sender, instance, created, **kwargs):
         q.enqueue(generate_thumbnail, instance.file.path, instance.id)
 
 def generate_thumbnail(source, video_id):
+    """Nimmt Frame bei 1 Sekunde und speichert als JPG."""
     thumbnails_dir = os.path.join(settings.MEDIA_ROOT, "thumbnails")
     os.makedirs(thumbnails_dir, exist_ok=True)
     output_path = os.path.join(thumbnails_dir, f"{video_id}.jpg")
 
-    cmd = ["ffmpeg","-ss","00:00:01.000","-i",source,"-frames:v","1","-q:v","2","-y",output_path]
-    subprocess.run(cmd, capture_output=True, text=True)
-
-    # hier hochladen:
-    cloudinary.uploader.upload(
-        output_path,
-        public_id=f"thumbnails/{video_id}.jpg",
-        resource_type="image",
-        overwrite=True
-    )
+    cmd = [
+        "ffmpeg",
+        "-ss", "00:00:01.000",  
+        "-i", source,
+        "-frames:v", "1",
+        "-q:v", "2",
+        "-y",
+        output_path
+    ]
+    subprocess.run(cmd, capture_output=True, text=True)    
 
 
 
