@@ -1,6 +1,7 @@
 import subprocess
 import os
 from django.conf import settings
+from django.core.files.storage import default_storage
 
 def convert_video(source, video_id, resolution, suffix):
     """Convert video to HLS format with m3u8 playlist"""
@@ -39,6 +40,14 @@ def convert_video(source, video_id, resolution, suffix):
 
     if result.returncode != 0:
         print("FFmpeg error:", result.stderr)
+        return
+    
+    for root, dirs, files in os.walk(output_dir):
+        for file in files:
+            local_path = os.path.join(root, file)
+            s3_path = f"videos/{video_id}/{suffix}/{file}"
+            with open(local_path, 'rb') as f:
+                default_storage.save(s3_path, f)
 
 
     

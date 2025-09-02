@@ -6,6 +6,8 @@ import os
 import django_rq
 from django.conf import settings
 import subprocess
+from django.core.files.storage import default_storage 
+
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
@@ -32,7 +34,9 @@ def generate_thumbnail(source, video_id):
         output_path
     ]
     subprocess.run(cmd, capture_output=True, text=True)    
-
+    s3_thumb_path = f"thumbnails/{video_id}.jpg"
+    with open(output_path, 'rb') as f:
+        default_storage.save(s3_thumb_path, f)
 
 
 @receiver(post_delete, sender=Video)
