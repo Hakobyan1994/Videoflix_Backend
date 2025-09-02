@@ -7,6 +7,19 @@ from rest_framework import status, permissions
 from pathlib import Path
 from django.http import FileResponse, Http404
 from django.conf import settings
+from django.shortcuts import redirect
+import cloudinary
+import os
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
+
+
 
 
 class VideoList(APIView):
@@ -36,21 +49,12 @@ class VideoDetail(APIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 def serve_hls(request, video_id: int, suffix: str, filename: str):
-    """
-    Liefert sowohl index.m3u8 als auch jedes segment_xxx.ts
-    → /api/video/<id>/<suffix>/<filename>
-    """
-    file_path = (
-        Path(settings.MEDIA_ROOT) /
-        "videos" / str(video_id) / suffix / filename
+    # Statt lokaler Datei → 302 Redirect zur Cloudinary-URL
+    url, _ = cloudinary.utils.cloudinary_url(
+        f"videos/{video_id}/{suffix}/{filename}",
+        resource_type="raw",  # .m3u8 und .ts als "raw" ausliefern
+        secure=True,
     )
-    if file_path.exists():
-        ctype = (
-            "application/vnd.apple.mpegurl"
-            if filename.endswith(".m3u8")
-            else "video/MP2T"
-        )
-        return FileResponse(file_path.open("rb"), content_type=ctype)
-    raise Http404
+    return redirect(url)
 
 
