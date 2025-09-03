@@ -10,8 +10,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views  import   TokenObtainPairView, TokenRefreshView
-
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 class RegisterView(APIView):
     authentication_classes = []  
@@ -138,7 +138,7 @@ class PasswordResetConfirmView(APIView):
         return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
     
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class LogouthView(APIView):
     authentication_classes = []  
     permission_classes = []
