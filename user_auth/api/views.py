@@ -140,21 +140,10 @@ class PasswordResetConfirmView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LogouthView(APIView):
-    authentication_classes = []
+    authentication_classes = []  
     permission_classes = []
-
-    def post(self, request):
+    def post(self,request):
         response = Response({"message": "Erfolgreich ausgeloggt."}, status=status.HTTP_200_OK)
-
-        cookie_params = {
-            'path': '/',
-            'domain': None,          # oder z.B. ".vidoflix-app.com"
-            'secure': True,          # ← HTTPS auf Heroku: True
-            'samesite': 'None',      # oft bei Cross-Site JWT (z.B. fetch mit credentials: include)
-            'httponly': True,        # wenn beim Setzen verwendet
-        }
-
-        response.delete_cookie('access_token', **cookie_params)
-        response.delete_cookie('refresh_token', **cookie_params)
-
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
         return response
