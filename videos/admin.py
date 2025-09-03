@@ -21,7 +21,6 @@ class VideoAdmin(admin.ModelAdmin):
             "fields": ("title", "description", "category")
         }),
         ("Dateien", {
-            # 👇 thumbnail_url entfernt, Preview bleibt als read-only Anzeige
             "fields": ("file", "thumbnail_preview"),
         }),
         ("Meta", {
@@ -30,7 +29,6 @@ class VideoAdmin(admin.ModelAdmin):
     )
 
     def thumbnail_preview(self, obj):
-        # Zeige /media/thumbnails/<id>.jpg, wenn vorhanden
         if not obj.pk:
             return "—"
         rel = f"thumbnails/{obj.id}.jpg"

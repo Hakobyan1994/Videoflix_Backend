@@ -140,7 +140,8 @@ class PasswordResetConfirmView(APIView):
 
 
 class LogouthView(APIView):
-   
+    authentication_classes = []  
+    permission_classes = []
     def post(self,request):
         response = Response({"message": "Erfolgreich ausgeloggt."}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
